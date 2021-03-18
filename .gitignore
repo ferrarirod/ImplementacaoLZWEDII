@@ -1,3 +1,6 @@
+#Out Files
+*.txt
+
 #VS Code Folder
 .vscode
 

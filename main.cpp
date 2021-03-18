@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -84,20 +85,79 @@ string lzwDecompression(vector<int> codes)
     return tranlatedStr;
 }
 
-int main()
+int main(int argc, char const *argv[])
 {
-    cout << "Codificando bananabanabofana" << endl;
-    vector<int> codes = lzwCompression("bananabanabofana");
-    cout << "Codigos" << endl;
-    for(int i = 0;i < codes.size();i++)
+    if(argc != 2)
     {
-        cout << codes[i] << endl;
+        cout << "ERRO: Esperando os seguinte parametros: ./<nome do executavel> <diretorio do .txt com string>" << endl;
     }
+    else
+    {
+        cout << "Lendo arquivo..." << endl;
+        ifstream file;
+        file.open(argv[1]);
+        if(file.is_open())
+        {
+            string str;
+            while (getline(file,str))
+            {
+                cout << "Codificando " << str << "..." << endl;
+                vector<int> codes = lzwCompression(str);
+                bool archive;
+                cout << "Imprimir em:" << endl << "0 - Console" << endl << "1 - Arquivo" << endl;
+                cout << "Opcao: ";
+                cin >> archive;
+                if(archive)
+                {
+                    ofstream outfile("codigos.txt",ios::app);
+                    outfile << str << ": ";
+                    for(int i = 0;i < codes.size();i++)
+                    {
+                        if(i != codes.size() - 1)
+                        {
+                            outfile << codes[i] << " ";
+                        }
+                        else
+                        {
+                            outfile << codes[i] << endl;
+                        }
+                    }
+                    cout << "Codigos salvos em codigos.txt na pasta do projeto" << endl;
+                    outfile.close();
+                }
+                else
+                {
+                    cout << str << ": ";
+                    for(int i = 0;i < codes.size();i++)
+                    {
+                        if(i != codes.size() - 1)
+                        {
+                            cout << codes[i] << " ";
+                        }
+                        else
+                        {
+                            cout << codes[i] << endl;
+                        }
+                    }   
+                }
 
-    cout << "Decodificando esses codigos" << endl;
-    string translated = lzwDecompression(codes);
+                bool decode;
+                cout << "Decodificar?" << endl << "1 - Sim" << endl << "0 - Nao" << endl;
+                cout << "Resposta: ";
+                cin >> decode;
+                if(decode)
+                {
+                    string decoded = lzwDecompression(codes);
+                    cout << "Codigos decodificados se converteram em:" << endl << decoded << endl;
+                } 
+            }
 
-    cout << translated << endl;
-
+            file.close();
+        }
+        else
+        {
+            cout << "Arquivo nao aberto..." << endl;
+        }
+    }
     return 0;
 }
